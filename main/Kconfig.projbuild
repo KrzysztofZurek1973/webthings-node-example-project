@@ -1,0 +1,25 @@
+menu "Web Thing Example"
+		
+config LED_GPIO
+	int "GPIO number for led ON/OFF"
+	range 0 34
+	default 26
+	help
+		GPIO number for blinking led.
+		
+		Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used.
+
+		GPIOs 35-39 are input-only so cannot be used to drive the led.
+
+config BUTTON_GPIO
+	int "GPIO number for button"
+	range 0 34
+	default 22
+	help
+		GPIO number for button.
+		
+		Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used.
+
+		GPIOs 35-39 are input-only.
+
+endmenu
