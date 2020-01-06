@@ -1,31 +1,46 @@
-# WiFi station example
+# IoT Web Thing example
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+In this example 2 IoT things are created:
+
+* Push button.
+* Blinking LED.
 
 
 ## How to use example
 
+This project requires following folders (from ```iot_components``` repository) in components directory:
+
+* thing_blinking_led
+* thing_button
+* web_thing_server
+
 ### Configure the project
 
 ```
-make menuconfig
+idf.py menuconfig
 ```
-
-* Set serial port under Serial Flasher Options.
-
-* Set WiFi SSID and WiFi Password and Maximum retry under Example Configuration Options.
 
 ### Build and Flash
 
-Build the project and flash it to the board, then run monitor tool to view serial output:
+To build run
 
-```
-make -j4 flash monitor
-```
+```idf.py build```
 
-(To exit the serial monitor, type ``Ctrl-]``.)
+To flash run
 
-See the Getting Started Guide for full steps to configure and use ESP-IDF to build projects.
+```idf.py flash```
 
-## Example Output
+and press boot button (on ESP32_DevKitc_V4)
+
+## Example description
+
+Under construction.
+
+##License
+
+This project is licensed under the MIT License.
+
+## Authors
+
+* **Krzysztof Zurek** - [kz](https://github.com/KrzysztofZurek1973)
 
