@@ -36,7 +36,7 @@ and press boot button (on ESP32_DevKitc_V4)
 
 Under construction.
 
-##License
+## License
 
 This project is licensed under the MIT License.
 
