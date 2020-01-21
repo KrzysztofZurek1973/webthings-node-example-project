@@ -84,7 +84,7 @@ Flash: ```idf.py flash``` and press boot button.
 * [Web Thing API](https://iot.mozilla.org/wot/) - https://iot.mozilla.org/wot/
 * [esp-idf](https://github.com/espressif/esp-idf) - https://github.com/espressif/esp-idf
 
-##License
+## License
 
 This project is licensed under the MIT License.
 
