@@ -31,6 +31,8 @@ This project requires following folders in components directory (placed in proje
 * [thing_button](https://github.com/KrzysztofZurek1973/iot_components/tree/master/thing_button)
 * [web_thing_server](https://github.com/KrzysztofZurek1973/iot_components/tree/master/web_thing_server)
 
+**Clone the above software form [iot_components](https://github.com/KrzysztofZurek1973/iot_components) repository into `components` folder in your project**
+
 Detailed informations about every component are placed in it's own folder.
 
 ### Power-up
