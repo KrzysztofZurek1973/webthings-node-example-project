@@ -41,6 +41,7 @@
 #define ESP_INTR_FLAG_DEFAULT	0
 
 //wifi station configuration data
+#define TCP_PORT 8080
 char mdns_hostname[65];
 
 const int IP4_CONNECTED_BIT = BIT0;
@@ -312,7 +313,7 @@ void init_nvs(void){
 
 				//initialize wifi
 				wifi_init_sta(wifi_ssid, wifi_pass);
-				initialise_mdns(mdns_hostname, false);
+				initialize_mdns(mdns_hostname, false, TCP_PORT);
 			}
 			else{
 				printf("ssid, password or hostname too long, %i, %i, %i\n",
@@ -324,7 +325,7 @@ void init_nvs(void){
 			//start AP and server with page for defining these parameters
 			wifi_init_softap();
 			//initialize mDNS service
-			initialise_mdns(NULL, true);
+			initialize_mdns(mdns_hostname, false, TCP_PORT);
 			node_is_station = false;
 			//start server
 			xTaskCreate(ap_server_task, "ap_server_task", 1024*4, NULL, 1, NULL);
