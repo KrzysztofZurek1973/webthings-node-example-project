@@ -325,7 +325,7 @@ void init_nvs(void){
 			//start AP and server with page for defining these parameters
 			wifi_init_softap();
 			//initialize mDNS service
-			initialize_mdns(mdns_hostname, false, TCP_PORT);
+			initialize_mdns(NULL, true, TCP_PORT);
 			node_is_station = false;
 			//start server
 			xTaskCreate(ap_server_task, "ap_server_task", 1024*4, NULL, 1, NULL);
