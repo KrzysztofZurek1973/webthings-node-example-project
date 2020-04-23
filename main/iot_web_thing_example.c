@@ -238,6 +238,9 @@ void wifi_init_sta(char *ssid, char *pass){
     strcpy((char *)wifi_config.sta.ssid, ssid);
     strcpy((char *)wifi_config.sta.password, pass);
     wifi_config.sta.bssid_set = false;
+    //for WIFI_PS_MAX_MODEM power saving
+    //must be correlated with gateway ping interval
+    wifi_config.sta.listen_interval = 0;
     wifi_config.sta.scan_method = WIFI_FAST_SCAN;
     wifi_config.sta.threshold.rssi = -100;
 
@@ -248,10 +251,9 @@ void wifi_init_sta(char *ssid, char *pass){
     if (err == ESP_OK){
     	ESP_LOGI(TAG_WIFI, "wifi_init_sta finished.");
     	//turn off power savings
-    	esp_wifi_set_ps(WIFI_PS_NONE);
-    	//power savings not correctly works with IoT Mozilla Gateway
-    	//thing sometimes loses connection with gateway
-    	//esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
+    	//esp_wifi_set_ps(WIFI_PS_NONE);
+    	//turn ON power savings
+    	esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
     }
     else{
     	ESP_LOGI(TAG_WIFI, "connection to AP failed");
