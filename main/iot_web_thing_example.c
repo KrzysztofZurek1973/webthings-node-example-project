@@ -44,15 +44,14 @@
 #define TCP_PORT 8080
 char mdns_hostname[65];
 
-const int IP4_CONNECTED_BIT = BIT0;
-const int IP6_CONNECTED_BIT = BIT1;
+#define WIFI_CONNECTED_BIT BIT0
+#define WIFI_FAIL_BIT      BIT1
 
 static int irq_counter = 0;
 
 //wifi data
 /* FreeRTOS event group to signal when we are connected*/
 static EventGroupHandle_t wifi_event_group;
-const int WIFI_CONNECTED_BIT = BIT0;
 static const char *TAG_WIFI = "wifi station";
 static int s_retry_num = 0;
 
@@ -159,7 +158,7 @@ void init_things(){
 
 /***************************************************************
  *
- *
+ * wifi event handler
  *
  * **************************************************************/
 static void event_handler(void* arg, esp_event_base_t event_base, 
@@ -183,10 +182,10 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 	    	    break;
 
     		case WIFI_EVENT_STA_DISCONNECTED:
-	    		//never give up!
+	    		//do not give up!
     			vTaskDelay(1000 / portTICK_PERIOD_MS);
 	    		esp_wifi_connect();
-	    		xEventGroupClearBits(wifi_event_group, IP4_CONNECTED_BIT | IP6_CONNECTED_BIT);
+	    		//xEventGroupClearBits(wifi_event_group, IP4_CONNECTED_BIT | IP6_CONNECTED_BIT);
 	    		s_retry_num++;
 	    		ESP_LOGI(TAG_WIFI,"retry to connect to the AP, %i", s_retry_num);
 	    		break;
@@ -198,21 +197,22 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 	else if (event_base == IP_EVENT){
 	    if (event_id == IP_EVENT_STA_GOT_IP){
 	    	ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
-	    	ESP_LOGI(TAG_WIFI, "got ip:%s", ip4addr_ntoa(&event->ip_info.ip));
+	    	//ESP_LOGI(TAG_WIFI, "got ip:%s", ip4addr_ntoa(&event->ip_info.ip)); //old version of esp-idf
+	    	ESP_LOGI(TAG_WIFI, "got ip:" IPSTR "\n", IP2STR(&event->ip_info.ip));
 	    	s_retry_num = 0;
-	    	xEventGroupSetBits(wifi_event_group, IP4_CONNECTED_BIT);
+	    	//xEventGroupSetBits(wifi_event_group, IP4_CONNECTED_BIT);
+	    	xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
+	    	vTaskDelay(50 / portTICK_PERIOD_MS);
 	    	if (thing_server_loaded == false){
 	    		//initialize web thing server
-	    		start_web_thing_server(8080, mdns_hostname, MDNS_DOMAIN);
+	    		start_web_thing_server(TCP_PORT, mdns_hostname, MDNS_DOMAIN);
 	    		thing_server_loaded = true;
 	    		//initialize sntp client
 	    		init_sntp();
+	    		//initialize things, properties etc.
 	    		node_is_station = true;
 	    	}
 	    }
-	    else if (event_id == IP_EVENT_GOT_IP6){
-    		xEventGroupSetBits(wifi_event_group, IP6_CONNECTED_BIT);
-    	}
     }
 }
 
@@ -227,8 +227,11 @@ void wifi_init_sta(char *ssid, char *pass){
 
     wifi_event_group = xEventGroupCreate();
 
-    tcpip_adapter_init();
+    //tcpip_adapter_init(); //old version of esp-idf
+    esp_netif_init();
+    //ESP_ERROR_CHECK(esp_event_loop_init(event_handler, arg) );
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+    esp_netif_create_default_wifi_sta();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
@@ -238,28 +241,39 @@ void wifi_init_sta(char *ssid, char *pass){
     
     strcpy((char *)wifi_config.sta.ssid, ssid);
     strcpy((char *)wifi_config.sta.password, pass);
-    wifi_config.sta.bssid_set = false;
-    //for WIFI_PS_MAX_MODEM power saving
-    //must be correlated with gateway ping interval
-    wifi_config.sta.listen_interval = 0;
+    wifi_config.sta.bssid_set = 0;
     wifi_config.sta.scan_method = WIFI_FAST_SCAN;
     wifi_config.sta.threshold.rssi = -100;
+    wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
+    wifi_config.sta.pmf_cfg.required = false;
+    wifi_config.sta.pmf_cfg.capable = true;
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
+    ESP_ERROR_CHECK(esp_wifi_start() );
 
-    esp_err_t err = esp_wifi_start();
-    if (err == ESP_OK){
-    	ESP_LOGI(TAG_WIFI, "wifi_init_sta finished.");
-    	//turn off power savings
-    	//esp_wifi_set_ps(WIFI_PS_NONE);
-    	//turn ON power savings
-    	esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
+	//new version
+	/* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
+     * number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) */
+    EventBits_t bits = xEventGroupWaitBits(wifi_event_group,
+            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
+            pdFALSE,
+            pdFALSE,
+            portMAX_DELAY);
+
+    /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
+     * happened. */
+    if (bits & WIFI_CONNECTED_BIT) {
+        ESP_LOGI(TAG_WIFI, "connected to ap SSID:%s", ssid);
+    } else if (bits & WIFI_FAIL_BIT) {
+        ESP_LOGI(TAG_WIFI, "Failed to connect to SSID:%s", ssid);
+    } else {
+        ESP_LOGE(TAG_WIFI, "UNEXPECTED EVENT");
     }
-    else{
-    	ESP_LOGI(TAG_WIFI, "connection to AP failed");
-    	esp_wifi_deinit();
-    }
+
+    ESP_ERROR_CHECK(esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler));
+    ESP_ERROR_CHECK(esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler));
+    vEventGroupDelete(wifi_event_group);
 }
 
 
