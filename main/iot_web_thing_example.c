@@ -1,8 +1,9 @@
-/* Example of using Web Thing Server
+/* 
+	Example of using Web Thing Server
 
-   Krzysztof Zurek, krzurek@gmail.com
-   Jan 1 2020
-   MIT licence
+	Krzysztof Zurek, krzurek@gmail.com
+	Feb 1 2021
+	MIT licence
 */
 #include <stdio.h>
 #include <sys/param.h>
@@ -20,7 +21,6 @@
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "mdns.h"
-//#include "esp_event_loop.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "nvs_flash.h"

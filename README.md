@@ -1,6 +1,6 @@
 # IoT Web Thing Example
 
-This example presents how to use *Web Thing Server* on ESP32 (with [esp-idf ver. 4.0](https://github.com/espressif/esp-idf)) to run the following things in the node:
+This example presents how to use *Web Thing Server* on ESP32 (with [esp-idf ver. 4.1](https://github.com/espressif/esp-idf)) to run the following things in the node:
 
  * push button,
  * blinking led.
@@ -21,7 +21,7 @@ Example things have the following assets:
 	
 ![led](./led.png)
 
-In order to fully use the potential of IoT, and to have access to *things* from the Internet, it is best to run *WebThing Gateway* in the same WiFi network.
+In order to fully use the potential of IoT and to have access to *things* from the Internet, it is best to run *WebThing Gateway* in the same WiFi network.
 
 ## How to use example
 
@@ -37,7 +37,7 @@ Detailed informations about every component are placed in it's own folder.
 
 ### Power-up
 
-By the first power-up the node starts in **AP** mode with SSID: ```iot-node-ap``` and password: ```htqn9Fzv```. After loggin into this WiFi network load the main page by typing in browser ```iot-node-ap.local:8080/``` (it does not work on Android) or ```192.168.4.1:8080/```.
+By the first power-up the node starts in **AP** mode with SSID: **iot-node-ap** and password: **htqn9Fzv**. After loggin into this WiFi network load the main page by typing in browser ```iot-node-ap.local:8080/``` (it does not work on Android) or ```192.168.4.1:8080/```.
 
 On the page write SSID and password of the WiFi network where the node will work. In the last position enter the local node's name.
 
@@ -63,7 +63,7 @@ In the main loop information about free heap memory is sent every 2 seconds on s
 
 *Web Thing Server* starts running after event ```IP_EVENT_STA_GOT_IP```. Server runs on port 8080  (more information in *Web Thing Server* documentation).
 
-After that the sntp client (```init_sntp```) is started.
+After that the SNTP client (```init_sntp```) is started.
 
 ### Project Configuration
 
