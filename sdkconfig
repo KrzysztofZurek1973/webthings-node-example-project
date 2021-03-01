@@ -119,11 +119,16 @@ CONFIG_PARTITION_TABLE_MD5=y
 # end of Partition Table
 
 #
-# Web Thing Example
+# LED config
 #
 CONFIG_LED_GPIO=26
+# end of LED config
+
+#
+# Button config
+#
 CONFIG_BUTTON_GPIO=22
-# end of Web Thing Example
+# end of Button config
 
 #
 # Web Thing Server

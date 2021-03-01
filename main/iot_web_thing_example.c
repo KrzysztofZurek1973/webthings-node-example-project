@@ -250,10 +250,10 @@ void wifi_init_sta(char *ssid, char *pass){
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
-    esp_wifi_set_ps(WIFI_PS_NONE);
+    //esp_wifi_set_ps(WIFI_PS_NONE);
+    esp_wifi_set_ps(WIFI_PS_MIN_MODEM); //switch ON wifi power saving
     ESP_ERROR_CHECK(esp_wifi_start() );
 
-	//new version
 	/* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
      * number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) */
     EventBits_t bits = xEventGroupWaitBits(wifi_event_group,
