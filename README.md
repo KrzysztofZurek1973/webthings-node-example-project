@@ -1,25 +1,31 @@
 # IoT Web Thing Example
 
-This example presents how to use *Web Thing Server* on ESP32 (with [esp-idf ver. 4.1](https://github.com/espressif/esp-idf)) to run the following things in the node:
+This example presents how to use *Web Thing Server* on ESP32 (with [esp-idf ver. 4.1](https://github.com/espressif/esp-idf)) to run the following two things in the node:
 
  * push button,
  * blinking led.
 
 Example things have the following assets:
 
+![push button](./images/button.png)
+
  * push button:
 	- property ```pushed``` (shows if button is pushed or not),
 	- property ```counter``` (shows how many times button was pushed),
 	- event ```10times``` (event notification sent when button was pushed 10 times).
 
-![push button](./button.png)
-	
+![led](./images/led-gui.png)
+
  * blinking led:
 	- property ```led_on``` (ON/OFF switch),
 	- property ```frequency``` (led blinking frequency),
-	- action ```constant_on``` (turn the led on for defined period of time).
+	- action ```settings``` with the following inputs:
+		- mode (enum values)
+		- pattern (enum values)
+		- sensor (boolean)
+		- timer (integer 0..100).
 	
-![led](./led.png)
+![led](./images/led-action-inputs.png)
 
 In order to fully use the potential of IoT and to have access to *things* from the Internet, it is best to run *WebThing Gateway* in the same WiFi network.
 
@@ -37,7 +43,7 @@ Detailed informations about every component are placed in it's own folder.
 
 ### Power-up
 
-By the first power-up the node starts in **AP** mode with SSID: **iot-node-ap** and password: **htqn9Fzv**. After loggin into this WiFi network load the main page by typing in browser ```iot-node-ap.local:8080/``` (it does not work on Android) or ```192.168.4.1:8080/```.
+By the first power-up the node starts in **AP** mode with SSID: **iot-node-ap** and password: **12345678** (password and SSID are set in ```web_thing_softap.c``` file). After loggin into this WiFi network load the main page by typing in browser ```iot-node-ap.local:8080/``` (it does not work on Android) or ```192.168.4.1:8080/```.
 
 On the page write SSID and password of the WiFi network where the node will work. In the last position enter the local node's name.
 
